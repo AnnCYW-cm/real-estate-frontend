@@ -1,0 +1,29 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v2
+
+      # 运行测试（如果你还没有设置测试，可以忽略这一步）
+      # - name: 运行测试
+      #   run: |
+      #     # 在这里运行你的测试命令
+      #     echo "正在运行测试..."
+
+      - name: 设置 SSH
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: 部署到 AWS
+        run: |
+          rsync -avz -e "ssh -o StrictHostKeyChecking=no" ./ user@your-aws-server:/path/to/deploy
